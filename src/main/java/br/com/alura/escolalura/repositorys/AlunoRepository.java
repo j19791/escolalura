@@ -31,6 +31,8 @@ public class AlunoRepository { // esta classe terá o método salvar, a receber 
 	private MongoDatabase bancaDeDados;
 
 	private void criarConexao() {
+
+		// indicar um lugar p/ utilizar o codec
 		Codec<Document> codec = MongoClient.getDefaultCodecRegistry().get(Document.class);
 
 		AlunoCodec alunoCodec = new AlunoCodec(codec);

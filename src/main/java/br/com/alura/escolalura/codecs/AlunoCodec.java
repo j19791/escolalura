@@ -22,15 +22,15 @@ import br.com.alura.escolalura.models.Habilidade;
 import br.com.alura.escolalura.models.Nota;
 
 public class AlunoCodec implements CollectibleCodec<Aluno> {
-	
+
 	private Codec<Document> codec;
-	
+
 	public AlunoCodec(Codec<Document> codec) {
 		this.codec = codec;
 	}
 
 	@Override
-	public void encode(BsonWriter writer, Aluno aluno, EncoderContext encoder) {
+	public void encode(BsonWriter writer, Aluno aluno, EncoderContext encoder) {// Obj para doc
 		ObjectId id = aluno.getId();
 		String nome = aluno.getNome();
 		Date dataNascimento = aluno.getDataNascimento();
@@ -38,57 +38,55 @@ public class AlunoCodec implements CollectibleCodec<Aluno> {
 		List<Habilidade> habilidades = aluno.getHabilidades();
 		List<Nota> notas = aluno.getNotas();
 		Contato contato = aluno.getContato();
-		
-		Document document = new Document();
-		
+
+		Document document = new Document();// criaremos um documento e o popularemos com os valores dos atributos do
+											// objeto aluno
+
 		document.put("_id", id);
 		document.put("nome", nome);
 		document.put("data_nascimento", dataNascimento);
 		document.put("curso", new Document("nome", curso.getNome()));
-		if (habilidades != null){
+		if (habilidades != null) {
 			List<Document> habilidadesDocument = new ArrayList<>();
 			for (Habilidade habilidade : habilidades) {
-				habilidadesDocument.add(new Document("nome", habilidade.getNome())
-						.append("nivel", habilidade.getNivel()));
-				
+				habilidadesDocument.add(new Document("nome", habilidade.getNome()).append("nivel", habilidade.getNivel()));
+
 			}
 			document.put("habilidades", habilidadesDocument);
 		}
-		
+
 		if (notas != null) {
 			List<Double> notasParaSalvar = new ArrayList<>();
 			for (Nota nota : notas) {
 				notasParaSalvar.add(nota.getValor());
 			}
 			document.put("notas", notasParaSalvar);
-			
+
 		}
-		
+
 		List<Double> coordinates = new ArrayList<Double>();
-		for(Double location : contato.getCoordinates()){
+		for (Double location : contato.getCoordinates()) {
 			coordinates.add(location);
 		}
-		
-		document.put("contato", new Document()
-				.append("endereco" , contato.getEndereco())
-				.append("coordinates", coordinates)
-				.append("type", contato.getType()));
-		
+
+		document.put("contato", new Document().append("endereco", contato.getEndereco()).append("coordinates", coordinates).append("type", contato.getType()));
+
 		codec.encode(writer, document, encoder);
-		
+
 	}
 
 	@Override
-	public Class<Aluno> getEncoderClass() {
+	public Class<Aluno> getEncoderClass() {// precisaremos retornar apenas a classe à qual o nosso codec fará a
+											// conversão
 		return Aluno.class;
 	}
 
 	@Override
 	public Aluno decode(BsonReader reader, DecoderContext decoder) {
 		Document document = codec.decode(reader, decoder);
-		
+
 		Aluno aluno = new Aluno();
-		
+
 		aluno.setId(document.getObjectId("_id"));
 		aluno.setNome(document.getString("nome"));
 		aluno.setDataNascimento(document.getDate("data_nascimento"));
@@ -97,36 +95,35 @@ public class AlunoCodec implements CollectibleCodec<Aluno> {
 			String nomeCurso = curso.getString("nome");
 			aluno.setCurso(new Curso(nomeCurso));
 		}
-		
+
 		List<Double> notas = (List<Double>) document.get("notas");
-		
+
 		if (notas != null) {
 			List<Nota> notasDoAluno = new ArrayList<>();
 			for (Double nota : notas) {
 				notasDoAluno.add(new Nota(nota));
 			}
-			
+
 			aluno.setNotas(notasDoAluno);
 		}
-		
+
 		List<Document> habilidades = (List<Document>) document.get("habilidades");
-		
+
 		if (habilidades != null) {
 			List<Habilidade> habilidadesDoAluno = new ArrayList<>();
 			for (Document documentHabilidade : habilidades) {
-				habilidadesDoAluno.add(new Habilidade(documentHabilidade.getString("nome"), 
-						documentHabilidade.getString("nivel")) );
+				habilidadesDoAluno.add(new Habilidade(documentHabilidade.getString("nome"), documentHabilidade.getString("nivel")));
 			}
 			aluno.setHabilidades(habilidadesDoAluno);
 		}
-		
+
 		Document contato = (Document) document.get("contato");
 		if (contato != null) {
 			String endereco = contato.getString("contato");
 			List<Double> coordinates = (List<Double>) contato.get("coordinates");
 			aluno.setContato(new Contato(endereco, coordinates));
 		}
-		
+
 		return aluno;
 	}
 
@@ -145,7 +142,7 @@ public class AlunoCodec implements CollectibleCodec<Aluno> {
 		if (!documentHasId(aluno)) {
 			throw new IllegalStateException("Esse Document nao tem id");
 		}
-		
+
 		return new BsonString(aluno.getId().toHexString());
 	}
 

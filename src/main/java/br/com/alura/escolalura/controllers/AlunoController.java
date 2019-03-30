@@ -36,8 +36,9 @@ public class AlunoController {
 	Aluno aluno) {
 		System.out.println("Aluno para salvar: " + aluno);
 		try {
-			List<Double> latElong = geolocalizacaoService.obterLatELongPor(aluno.getContato());
-			aluno.getContato().setCoordinates(latElong);
+			// List<Double> latElong =
+			// geolocalizacaoService.obterLatELongPor(aluno.getContato());
+			// aluno.getContato().setCoordinates(latElong);
 			repository.salvar(aluno); // persistindo o aluno no MOngodb
 		} catch (Exception e) {
 			System.out.println("Endereco nao localizado");
