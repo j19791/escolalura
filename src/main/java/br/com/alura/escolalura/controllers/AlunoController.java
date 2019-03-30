@@ -60,7 +60,7 @@ public class AlunoController {
 
 		Aluno aluno = repository.obterAlunoPor(id);
 
-		model.addAttribute("aluno", aluno);
+		model.addAttribute("aluno", aluno);// precisaremos do objeto model para enviar objetos para a view
 
 		return "aluno/visualizar";
 	}

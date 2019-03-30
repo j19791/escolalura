@@ -71,7 +71,9 @@ public class AlunoRepository { // esta classe terá o método salvar, a receber 
 		criarConexao();
 		MongoCollection<Aluno> alunos = this.bancaDeDados.getCollection("alunos", Aluno.class);
 
-		MongoCursor<Aluno> resultados = alunos.find().iterator();
+		MongoCursor<Aluno> resultados = alunos.find().iterator();// tilizamos o método find seguido do iterator para
+																	// obtermos um cursor a ser utilizado para se
+																	// percorrer o resultado retornado da coleção
 
 		List<Aluno> alunosEncontrados = popularAlunos(resultados);
 		fecharConexao();
